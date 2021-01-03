@@ -1,3 +1,6 @@
+/*
+ * The RIO package is originally documented in the CS:APPv3 book.
+ * */
 #ifndef RIO_H
 #define RIO_H
 
@@ -10,7 +13,7 @@
  * */
 struct rio_t {
     int   rio_fd;
-    int   rio_cnt;
+    int   rio_left;
     char *rio_bufptr;
     char  rio_buf[RIO_BUFSIZE];
 };
