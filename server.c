@@ -76,7 +76,6 @@ int main()
                 }
             } else {
                 handle_request(events[i].data.fd);
-                close(events[i].data.fd);
             }
         }
     }

@@ -84,7 +84,10 @@ void handle_error(int fd, char *cause, char *errnum, char *shortmsg, char *longm
 
     sprintf(header, 
         "HTTP/1.1 %s %s\r\n"
+        "Server: CHERRY\r\n"
         "Content-type: %s\r\n"
+        "Connection: keep-alive\r\n"
+        "Keep-Alive: timeout=5, max=1000\r\n"
         "Content-length: %d\r\n\r\n",
         errnum, file_type, shortmsg, (int) strlen(body));
     
@@ -130,8 +133,10 @@ static void serve_static(int fd, char *filename, int filesize)
 
     sprintf(header,
             "HTTP/1.1 200 OK\r\n"
-            "Server CHERRY\r\n"
+            "Server: CHERRY\r\n"
             "Content-length: %d\r\n"
+            "Connection: keep-alive\r\n"
+            "Keep-Alive: timeout=5, max=1000\r\n"
             "Content-type: %s\r\n\r\n",
             filesize, file_type);
 
