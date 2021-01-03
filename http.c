@@ -143,26 +143,26 @@ static void serve_static(int fd, char *filename, int filesize)
     n = rio_writen(fd, header, strlen(header));
     if (n != strlen(header)) {
         log_error("rio_writen error");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     int srcfd = open(filename, O_RDONLY, 0);
     if (srcfd <= 2) {
         log_error("open");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     char *srcaddr = mmap(NULL, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
     if (srcaddr <= 0) {
         log_error("mmap");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
     close(srcfd);
 
     n = rio_writen(fd, srcaddr, filesize);
     if (filesize != n) {
         log_error("rio_writen");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     munmap(srcaddr, filesize);

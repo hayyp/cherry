@@ -105,7 +105,7 @@ static int setup_listenfd()
     int err;
     if ((err = getaddrinfo(NULL, PORT, &hints, &servinfo_list))) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(err));
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     for (servinfo = servinfo_list; servinfo != NULL; servinfo = servinfo->ai_next) {
@@ -125,12 +125,12 @@ static int setup_listenfd()
 
     if (servinfo == NULL) {
         fprintf(stderr, "failed to bind socket\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     if (listen(sockfd, BACKLOG) == -1) {
         perror("listen");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     freeaddrinfo(servinfo_list);
