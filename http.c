@@ -129,7 +129,7 @@ static void serve_static(int fd, char *filename, int filesize)
     file_type = get_file_type(extension);
 
     sprintf(header,
-            "HTTP/1.0 200 OK\r\n"
+            "HTTP/1.1 200 OK\r\n"
             "Server CHERRY\r\n"
             "Content-length: %d\r\n"
             "Content-type: %s\r\n\r\n",
