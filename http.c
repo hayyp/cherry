@@ -41,7 +41,13 @@ void handle_request(int fd)
     struct stat sbuf;
 
     rio_readinitb(&rio, fd);
-    rio_readlineb(&rio, buf, LONGMAX);
+
+    /* a loop can be used to read all requests in one go but should check for EAGAIN too */
+    int rc = rio_readlineb(&rio, buf, LONGMAX);
+    if (rc < 0 && rc != -EAGAIN) {
+        log_error("error occurs when reading request");
+        exit(EXIT_FAILURE);
+    }
     
     sscanf(buf, "%s %s %s", method, uri, version); // for example, GET / HTTP/1.1 
     log_info("%s %s %s", method, uri, version);
@@ -98,8 +104,13 @@ void handle_error(int fd, char *cause, char *errnum, char *shortmsg, char *longm
 static void read_request_body(struct rio_t *rio)
 {
     char buf[LONGMAX];
+    int  rc;
     do {
-        rio_readlineb(rio, buf, LONGMAX);
+        rc = rio_readlineb(rio, buf, LONGMAX);
+        if (rc < 0 && rc != -EAGAIN) {
+            log_error("error occurs when reading request");
+            exit(EXIT_FAILURE);
+        }
     } while (strncmp(buf, "\r\n", LONGMAX));
 }
 
