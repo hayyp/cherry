@@ -12,7 +12,7 @@
 
 #define LONGMAX 8192 /* that is, 8KB */
 #define SHORTMAX 512
-#define root "./statics"     /* where to find static files such as index.html */
+#define root "../statics"     /* where to find static files such as index.html */
 
 static struct mime_t mime_list[] = {
     {".css",  "text/css"},
@@ -42,34 +42,37 @@ void handle_request(int fd)
 
     rio_readinitb(&rio, fd);
 
-    /* a loop can be used to read all requests in one go but should check for EAGAIN too */
-    int rc = rio_readlineb(&rio, buf, LONGMAX);
-    if (rc < 0 && rc != -EAGAIN) {
-        log_error("error occurs when reading request");
-        exit(EXIT_FAILURE);
+    while (1) {
+        int rc = rio_readlineb(&rio, buf, LONGMAX);
+        if (rc < 0 && rc != -EAGAIN) {
+            log_error("error occurs when reading request");
+            exit(EXIT_FAILURE);
+        } else if (rc == -EAGAIN) {
+            break;
+        }
+        
+        sscanf(buf, "%s %s %s", method, uri, version); // for example, GET / HTTP/1.1 
+        log_info("%s %s %s", method, uri, version);
+
+        if (strcasecmp(method, "GET")) { // if not GET
+            handle_error(fd, method, "501", "Not Implemented", "HTTP Method Not Supported");
+            return;
+        }
+
+        parse_uri(uri, filename, NULL);
+
+        if (stat(filename, &sbuf) < 0) {
+            handle_error(fd, filename, "404", "Not Found", "The requested file cannot be found");
+            return;
+        }
+
+        if (!(S_ISREG(sbuf.st_mode)) || !(S_IRUSR & sbuf.st_mode)) {
+            handle_error(fd, filename, "403", "Forbidden", "Access not authorized");
+            return;
+        }
+
+        serve_static(fd, filename, sbuf.st_size);
     }
-    
-    sscanf(buf, "%s %s %s", method, uri, version); // for example, GET / HTTP/1.1 
-    log_info("%s %s %s", method, uri, version);
-
-    if (strcasecmp(method, "GET")) { // if not GET
-        handle_error(fd, method, "501", "Not Implemented", "HTTP Method Not Supported");
-        return;
-    }
-
-    parse_uri(uri, filename, NULL);
-
-    if (stat(filename, &sbuf) < 0) {
-        handle_error(fd, filename, "404", "Not Found", "The requested file cannot be found");
-        return;
-    }
-
-    if (!(S_ISREG(sbuf.st_mode)) || !(S_IRUSR & sbuf.st_mode)) {
-        handle_error(fd, filename, "403", "Forbidden", "Access not authorized");
-        return;
-    }
-
-    serve_static(fd, filename, sbuf.st_size);
 }
 
 void handle_error(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg)
