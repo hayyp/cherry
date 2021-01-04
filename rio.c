@@ -1,6 +1,7 @@
 /*
  * The RIO package is originally documented in the CS:APPv3 book.
  * */
+#include <sys/sendfile.h>
 #include <sys/types.h>
 #include <string.h>
 #include <errno.h>
@@ -127,4 +128,22 @@ ssize_t rio_writen(int fd, void *usrbuf, size_t n)
         bufp  += nwritten;
     }
     return n;
+}
+
+ssize_t rio_sendfile(int dst, int src, size_t size)
+{
+    size_t nleft = size;
+    ssize_t nwritten;
+
+    while (nleft > 0) {
+        if ((nwritten = sendfile(dst, src, NULL, size)) <= 0) {
+            if (errno == EINTR)
+                nwritten = 0;
+            else
+                return -1;
+        }
+
+        nleft -= nwritten;
+    }
+    return size;
 }

@@ -25,4 +25,6 @@ ssize_t rio_readlineb   (struct rio_t *rp, void *usrbuf, size_t maxlen); /* to r
 ssize_t rio_readn (int fd, void *usrbuf, size_t n);  /* fd => usrbuf */
 ssize_t rio_writen(int fd, void *usrbuf, size_t n);
 
+ssize_t rio_sendfile(int dst, int src, size_t size);
+
 #endif

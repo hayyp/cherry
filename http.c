@@ -1,9 +1,10 @@
-#include <sys/mman.h>
+#include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 #include <fcntl.h>
 #include "http.h"
 #include "rio.h"
@@ -163,21 +164,14 @@ static void serve_static(int fd, char *filename, int filesize)
         exit(EXIT_FAILURE);
     }
 
-    char *srcaddr = mmap(NULL, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
-    if (srcaddr <= 0) {
-        log_error("mmap");
+
+    n = rio_sendfile(fd, srcfd, filesize);
+    if (n == -1) {
+        perror("sendfile");
         exit(EXIT_FAILURE);
     }
+
     close(srcfd);
-
-    n = rio_writen(fd, srcaddr, filesize);
-    if (filesize != n) {
-        log_error("rio_writen");
-        exit(EXIT_FAILURE);
-    }
-
-    munmap(srcaddr, filesize);
-    return;
 }
 
 static const char *get_file_type(const char *extension)
