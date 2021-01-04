@@ -8,7 +8,7 @@ That said, cherry remains a simple HTTP server designed with unicore performance
 
 ## Basic design
 
-The basic idea behind cherry is that for unicore servers, there is only one single control flow at all times, and therefore even without preemptive threading, it's also possible for us to implement almost the same level of concurrancy as cooperative threading if we can eliminate blocking operations.
+The basic idea behind cherry is that for unicore servers, there is only one single control flow at all times, and if we can eliminate blocking operations, even without preemptive threading, it's still possible for us to implement almost the same level of concurrancy as cooperative threading.
 Currently, cherry uses
 
 - `epoll(7)` to leverage I/O multiplexing  
@@ -23,7 +23,7 @@ With that being said, since we use the edge-triggered mode of `epoll(7)`, we mus
 
 To build cherry, you simply run `make` from `src`.
 
-## System Requirements
+## System requirements
 
 Since cherry uses `epoll(7)`, which is a Linux-specific system call, it runs only on Linux systems.
 
