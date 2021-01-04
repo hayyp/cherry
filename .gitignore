@@ -1,3 +1,5 @@
 cherry
 *.swp
 .DS_Store
+*.a
+*.o

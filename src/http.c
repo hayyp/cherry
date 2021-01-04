@@ -12,7 +12,7 @@
 
 #define LONGMAX 8192 /* that is, 8KB */
 #define SHORTMAX 512
-#define root "."     /* where to find static files such as index.html */
+#define root "./statics"     /* where to find static files such as index.html */
 
 static struct mime_t mime_list[] = {
     {".css",  "text/css"},
