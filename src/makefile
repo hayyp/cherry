@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -Wall -Wextra -DLOG_USE_COLOR -L ../lib/bin -lco
+CFLAGS= -Wall -Wextra -DLOG_USE_COLOR
 
 .PHONY: clean
 
