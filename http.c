@@ -28,7 +28,6 @@ void handle_request(int fd);
 void handle_error(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg);
 
 static void serve_static(int fd, char *filename, int filesize);
-static void read_request_body(struct rio_t *rio);
 static void parse_uri(char *uri, char *filename, char *query_str);
 static const char *get_file_type(const char *extension);
 
@@ -58,7 +57,6 @@ void handle_request(int fd)
         return;
     }
 
-    read_request_body(&rio);
     parse_uri(uri, filename, NULL);
 
     if (stat(filename, &sbuf) < 0) {
@@ -100,19 +98,6 @@ void handle_error(int fd, char *cause, char *errnum, char *shortmsg, char *longm
     
     rio_writen(fd, header, strlen(header));
     rio_writen(fd, body, strlen(body));
-}
-
-static void read_request_body(struct rio_t *rio)
-{
-    char buf[LONGMAX];
-    int  rc;
-    do {
-        rc = rio_readlineb(rio, buf, LONGMAX);
-        if (rc < 0 && rc != -EAGAIN) {
-            log_error("error occurs when reading request");
-            exit(EXIT_FAILURE);
-        }
-    } while (strncmp(buf, "\r\n", LONGMAX));
 }
 
 static void parse_uri(char *uri, char *filename, char *query_str)
