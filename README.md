@@ -2,22 +2,22 @@
 
 ![cherry image](cherry.png)
 
-Inspired by the [Capriccio](http://capriccio.cs.berkeley.edu) project and the [Zaver](https://github.com/zyearn/zaver.git) HTTP server, cherry started out as an explemental project trying to incorporate cooperative threading (sometimes also known as fibers or coroutines) into a server. Unfortuantely, as it turns out, it can be overly sophisticated to achive the same level of performance as the Capriccio project did.
+Inspired by the [Capriccio](http://capriccio.cs.berkeley.edu) project and the [Zaver](https://github.com/zyearn/zaver.git) HTTP server, cherry started out as an experimental project trying to incorporate cooperative threading (sometimes also known as fibers or coroutines) into a server. Unfortunately, as it turns out, it can be overly sophisticated to achieve the same level of performance as the Capriccio project did.
 
-That said, cherry remains a simple HTTP server designed with unicore performance in mind and tries to boost efficiency by leveraging lightweight mechanisms such as FSM (finite state machine) scheduling and I/O multiplexing (epoll). More importantly, it, hopefully, provides a working example for many of the ideas described in books but may not be used as much any more. Anyway, perhaps cherry will never be a serious server whatsoever, but for what I can see now, with its simplicity, it can still be a perfect playground for testing new ideas.
+That said, cherry remains a simple HTTP server designed with unicore performance in mind and tries to boost efficiency by leveraging lightweight mechanisms such as FSM (finite state machine) scheduling and I/O multiplexing (epoll). More importantly, it, hopefully, provides a working example for many of the ideas described in books but maybe not talked about as much anymore. Anyway, perhaps cherry will never be a serious server whatsoever, but from what I can see now, with its simplicity, it can still be a perfect playground for testing new ideas.
 
 ## Basic design
 
-The basic idea behind cherry is that for unicore servers, there is only one single control flow at all times, and if we can eliminate blocking operations, even without preemptive threading, it's still possible for us to implement almost the same level of concurrancy as cooperative threading.
+The basic idea behind cherry is that for unicore servers, there is only one single control flow at all times, and if we can eliminate blocking operations, even without preemptive threading, it's still possible for us to implement almost the same level of concurrency as cooperative threading.
 Currently, cherry uses
 
 - `epoll(7)` to leverage I/O multiplexing  
 
 - a queue to store file descriptors that are ready for I/O operations.
 
-- a finite state machine to schedule (e.g. when there are jobs waiting in the queue, `epoll(7)` should not block)
+- a finite state machine to schedule (e.g. when jobs are waiting in the queue, `epoll(7)` should not block)
 
-With that being said, since we use the edge-triggered mode of `epoll(7)`, we must read through the end of a file descriptor in one go every time, which may also lead to stavation of other waiting file descriptors.
+With that being said, since we use the edge-triggered mode of `epoll(7)`, we must read through the end of a file descriptor in one go every time, which may also lead to starvation of other waiting file descriptors.
 
 ## Build
 
@@ -25,7 +25,7 @@ To build cherry, you simply run `make` from `src`.
 
 ## System requirements
 
-Since cherry uses `epoll(7)`, which is a Linux-specific system call, it runs only on Linux systems.
+Since cherry uses `epoll(7)`, a Linux-specific system call, it runs only on Linux systems.
 
 ## TODO
 
@@ -41,7 +41,7 @@ Since cherry uses `epoll(7)`, which is a Linux-specific system call, it runs onl
 
 ## LICENSE
 
-Just like many projects of a similar nature, cherry uses a large amount of code from books and websites and a significant part of the source code used in parsing HTTP requests has come directly from Zaver. For what it's worth, despite its lack of any actual originality, cherry itself as a whole is shamelessly released under the MIT license (while packages used in this project may have their own license)
+Like many projects of a similar nature, cherry uses a large amount of code from books and websites, and a significant part of the source code used in parsing HTTP requests has come directly from Zaver. For what it's worth, despite its lack of any actual originality, cherry itself as a whole is shamelessly released under the MIT license (while packages used in this project may use a different license).
 
 ```plaintext
 Copyright 2021 Zee
