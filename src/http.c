@@ -18,8 +18,8 @@ static struct mime_t mime_list[] = {
     {".css",  "text/css"},
     {".html", "text/html"},
     {".png",  "image/png"},
-    {".jpg",  "image/jepg"},
-    {".jepg", "image/jepg"},
+    {".jpg",  "image/jpeg"},
+    {".jpeg", "image/jpeg"},
     {".gz",   "application/x-gzip"},
     {".tar",  "application/x-tar"}
 };
